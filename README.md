@@ -8,9 +8,13 @@ Use [https://mirrorz.org/monitor](https://mirrorz.org/monitor) to view one insta
 
 Use `node main.js` to insert data into one influxdb 2.x
 
-You may configure those secrets in `main.js`
+You may configure those secrets in `env.js`
 
-`parser` directory is from `mirrorz-org/mirrorz/src/parser`
+`parser` directory is from `mirrorz-org/mirrorz-parser`.
+
+```
+git clone git@github.com:mirrorz-org/mirrorz-parser.git parser
+```
 
 ## influxdb
 
