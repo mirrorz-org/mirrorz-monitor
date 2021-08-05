@@ -10,6 +10,8 @@ Use `node main.js` to insert data into one influxdb 2.x
 
 You may configure those secrets in `main.js`
 
+`parser` directory is from `mirrorz-org/mirrorz/src/parser`
+
 ## influxdb
 
 Use influxdb 2.x. Make sure you have a bucket named `mirrorz`.
