@@ -73,6 +73,7 @@ const LIST = [
   "https://mirrors.sustech.edu.cn/mirrorz/mirrorz.json",
   "https://iptv.uestc.edu.cn/mirrors/mirrorz.json",
   "https://mirrors.nwafu.edu.cn/api/mirrorz/info.json",
+  "https://mirrors.wsyu.edu.cn/.mirrorz/mirrorz.json",
 ];
 
 // cname: async (repourl: string) => unix_timestamp: int
