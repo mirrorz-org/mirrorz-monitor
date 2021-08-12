@@ -14,7 +14,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "8.0.6"
+      "version": "8.1.1"
     },
     {
       "type": "panel",
@@ -50,6 +50,12 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
@@ -58,7 +64,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1627643477990,
+  "iteration": 1628736124893,
   "links": [],
   "panels": [
     {
@@ -95,7 +101,7 @@
         "alertThreshold": false
       },
       "percentage": false,
-      "pluginVersion": "8.0.6",
+      "pluginVersion": "8.1.1",
       "pointradius": 2,
       "points": true,
       "renderer": "flot",
@@ -328,7 +334,7 @@
         },
         {
           "hide": false,
-          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo\" and r.mirror == \"${site}\" and r.name == \"${repo}\" and exists r.lastupdate)\n    |> map(fn: (r) => ({_value:-int(v: r.lastupdate), _time:r._time, _field:r.mirror+\":\"+r.name+\"(u)\" }))",
+          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo_lastupdate\" and r.mirror == \"${site}\" and r.name == \"${repo}\")\n    |> map(fn: (r) => ({_value:-r._value, _time:r._time, _field:r.mirror+\":\"+r.name+\" (lastupdate)\"}))",
           "refId": "B"
         }
       ],
@@ -454,11 +460,6 @@
             ]
           ],
           "tags": []
-        },
-        {
-          "hide": false,
-          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo\" and r.name == \"${repo}\" and exists r.lastupdate)\n    |> map(fn: (r) => ({_value:-int(v: r.lastupdate), _time:r._time, _field:r.mirror+\"(u)\"}))",
-          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -582,11 +583,6 @@
             ]
           ],
           "tags": []
-        },
-        {
-          "hide": false,
-          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo\" and r.mirror == \"${site}\" and exists r.lastupdate)\n    |> map(fn: (r) => ({_value:-int(v: r.lastupdate), _time:r._time, _field:r.name+\"(u)\"}))",
-          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -710,11 +706,6 @@
             ]
           ],
           "tags": []
-        },
-        {
-          "hide": false,
-          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo\" and r.name == \"${repo}\" and exists r.lastupdate)\n    |> map(fn: (r) => ({_value:-int(v: r.lastupdate), _time:r._time, _field:r.mirror+\"(u)\"}))",
-          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -837,11 +828,6 @@
             ]
           ],
           "tags": []
-        },
-        {
-          "hide": false,
-          "query": "starttime =  time(v: $__from * 1000000) //transform to ns. \nstoptime  = time(v: $__to * 1000000)\n\nfrom(bucket : \"mirrorz\")\n    |> range(start: starttime, stop: stoptime)\n    |> filter(fn: (r) => r._measurement == \"repo\" and r.mirror == \"${site}\" and exists r.lastupdate)\n    |> map(fn: (r) => ({_value:-int(v: r.lastupdate), _time:r._time, _field:r.name+\"(u)\"}))",
-          "refId": "B"
         }
       ],
       "timeFrom": null,
@@ -898,7 +884,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.0.6",
+      "pluginVersion": "8.1.1",
       "targets": [
         {
           "groupBy": [
@@ -992,7 +978,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.0.6",
+      "pluginVersion": "8.1.1",
       "targets": [
         {
           "groupBy": [
@@ -1126,5 +1112,5 @@
   "timezone": "browser",
   "title": "Home",
   "uid": "p6XP3EyMz",
-  "version": 24
+  "version": 25
 }
