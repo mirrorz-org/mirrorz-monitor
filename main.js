@@ -145,11 +145,22 @@ async function write(f) {
         t = c[1];
         break;
       }
-    // special cname, override with lastupdate
-    let lastupdate = 0
+    // special cname, also collect lastupdate
     if (m.cname in REPO) {
       lastupdate = (await REPO[m.cname](m.url.startsWith("http") ? m.url : mirrorz.site.url + m.url)) - Math.round(cur/1000);
       //console.log(mirrorz.site.url+m.url, lastupdate, t, lastupdate - t)
+      if (!Number.isNaN(lastupdate)) {
+        const repo_lastupdate = new Point('repo_lastupdate')
+          .timestamp(cur)
+          .tag('mirror', mirrorz.site.abbr)
+          .tag('name', m.cname)
+          .tag('url', m.url)
+          .intField('value', lastupdate);
+        points.push(repo_lastupdate)
+        //console.log(` ${repo_lastupdate}`);
+      } else {
+        //console.log(mirrorz.site.url+m.url, lastupdate, t)
+      }
     }
 
     const repo = new Point('repo')
@@ -157,7 +168,6 @@ async function write(f) {
       .tag('mirror', mirrorz.site.abbr)
       .tag('name', m.cname)
       .tag('url', m.url)
-      .tag('lastupdate', lastupdate)
       .intField('value', t);
     points.push(repo)
     //console.log(` ${repo}`);
