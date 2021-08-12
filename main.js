@@ -89,6 +89,7 @@ const REPO = {
   "ceph": require("./lastupdate/ceph"),
   "chakra": require("./lastupdate/chakra"),
   "CTAN": require("./lastupdate/CTAN"),
+  "debian": require("./lastupdate/debian"),
   "gnu": require("./lastupdate/gnu"),
   "gnu-alpha": require("./lastupdate/gnu-alpha"),
   "mageia": require("./lastupdate/mageia"),
