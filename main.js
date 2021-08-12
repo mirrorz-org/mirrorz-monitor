@@ -88,6 +88,7 @@ const REPO = {
   "centos-vault": require("./lastupdate/centos-vault"),
   "ceph": require("./lastupdate/ceph"),
   "chakra": require("./lastupdate/chakra"),
+  "CTAN": require("./lastupdate/CTAN"),
   "gnu": require("./lastupdate/gnu"),
   "gnu-alpha": require("./lastupdate/gnu-alpha"),
   "mageia": require("./lastupdate/mageia"),
