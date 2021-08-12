@@ -91,7 +91,6 @@ const REPO = {
   "CTAN": require("./lastupdate/CTAN"),
   "debian": require("./lastupdate/debian"),
   "debian-cd": require('./lastupdate/debian-cd'),
-  "debian-cdimage": require('./lastupdate/debian-cd'),
   "debian-security": require("./lastupdate/debian-security"),
   "gnu": require("./lastupdate/gnu"),
   "gnu-alpha": require("./lastupdate/gnu-alpha"),
