@@ -1,80 +1,11 @@
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-global.DOMParser = new JSDOM().window.DOMParser;
+const { init, load } = require("./parser/node");
+init(); // global.fetch, global.DOMParser, global.Timeout, global.timeout
+const parsers = require("./parser/parsers");
 
-Timeout = require("await-timeout");
-const timeout = 15000;
+const config = require("./config/config.json");
 
-fetch_extra = require("node-fetch-extra");
-async function fetchV6First (u, opt) {
-  const promise = fetch_extra(u, {family: 6, ...opt});
-  return await Timeout.wrap(promise, timeout/10, 'Timeout').catch(async (e) => {
-    const promise = fetch_extra(u, opt);
-    return await Timeout.wrap(promise, timeout/3, 'Timeout').catch(() => null);
-  });
-}
-global.fetch = fetchV6First;
-
-lzu = require("./parser/lzu");
-nju = require("./parser/nju");
-neusoft = require("./parser/neusoft");
-hust = require("./parser/hust");
-bfsu = require("./parser/bfsu");
-nano = require("./parser/nano");
-neo = require("./parser/neo");
-hit = require("./parser/hit");
-cqu = require("./parser/cqu");
-xjtu = require("./parser/xjtu");
-zju = require("./parser/zju");
-scau = require("./parser/scau");
-neu = require("./parser/neu");
-nyist = require("./parser/nyist");
-pku = require("./parser/pku");
-byrio = require("./parser/byrio");
-cqupt = require("./parser/cqupt");
-ynuosa = require("./parser/ynuosa");
-xtom = require("./parser/xtom");
-xtom_hk = require("./parser/xtom-hk");
-xtom_de = require("./parser/xtom-de");
-xtom_nl = require("./parser/xtom-nl");
-xtom_ee = require("./parser/xtom-ee");
-njupt = require("./parser/njupt");
-
-const LIST = [
-  lzu,
-  nju,
-  neusoft,
-  hust,
-  bfsu,
-  nano,
-  neo,
-  hit,
-  cqu,
-  xjtu,
-  zju,
-  scau,
-  neu,
-  nyist,
-  pku,
-  byrio,
-  cqupt,
-  ynuosa,
-  xtom,
-  xtom_hk,
-  xtom_de,
-  xtom_nl,
-  xtom_ee,
-  njupt,
-  "https://status.tuna.wiki/mirrorz/static/opentuna.json",
-  "https://mirrors.ustc.edu.cn/static/json/mirrorz.json",
-  "https://mirror.sjtu.edu.cn/mirrorz/siyuan.json",
-  "https://mirror.sjtu.edu.cn/mirrorz/zhiyuan.json",
-  "https://mirrors.dgut.edu.cn/static/mirrorz.json",
-  "https://mirrors.sustech.edu.cn/mirrorz/mirrorz.json",
-  "https://iptv.uestc.edu.cn/mirrors/mirrorz.json",
-  "https://mirrors.nwafu.edu.cn/api/mirrorz/info.json",
-  "https://mirrors.wsyu.edu.cn/.mirrorz/mirrorz.json",
-];
+const LIST = config.monitor_mirrors
+  .concat(config.monitor_parser.map((e) => parsers[e]));
 
 // cname: async (repourl: string) => unix_timestamp: int
 const REPO = {
@@ -114,18 +45,10 @@ const writeApi = new InfluxDB({url, token}).getWriteApi(org, bucket, 'ns')
 const cur = new Date();
 
 async function write(f) {
-  let mirrorz;
-  let points = [];
-  if (typeof(f) == "string") {
-    const resp = await fetch(f);
-    if (resp == null) {
-      //console.log(f);
-      return points
-    }
-    mirrorz = await resp.json();
-  } else {
-    mirrorz = await f();
-  }
+  const points = [];
+  const mirrorz = await load(f)
+  if (mirrorz === null)
+    return points;
 
   const site = new Point('site')
     .timestamp(cur)
@@ -183,15 +106,10 @@ async function write(f) {
   return points
 }
 
-async function writeWithTimeout(f) {
-  const promise = write(f);
-  return Timeout.wrap(promise, timeout, 'Timeout').catch(() => []);
-}
-
 async function main() {
   p = [];
   for (const f of LIST)
-    p.push(writeWithTimeout(f));
+    p.push(write(f));
   Promise.all(p).then(async (v) => {
     const points = v.flat();
     //console.log(points.length)
