@@ -78,7 +78,7 @@ async function write(f) {
       }
     // special cname, also collect lastupdate
     if (m.cname in REPO) {
-      lastupdate = (await REPO[m.cname](m.url.startsWith("http") ? m.url : mirrorz.site.url + m.url).catch(_ => null)) - Math.round(cur/1000);
+      lastupdate = (await REPO[m.cname](m.url.startsWith("http") ? m.url : mirrorz.site.url + m.url).catch(_ => NaN)) - Math.round(cur/1000);
       //console.log(mirrorz.site.url+m.url, lastupdate, t, lastupdate - t)
       if (!Number.isNaN(lastupdate)) {
         const repo_lastupdate = new Point('repo_lastupdate')
