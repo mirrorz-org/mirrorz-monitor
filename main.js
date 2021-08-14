@@ -7,36 +7,7 @@ const config = require("./config/config.json");
 const LIST = config.monitor_mirrors
   .concat(config.monitor_parser.map((e) => parsers[e]));
 
-// cname: async (repourl: string) => unix_timestamp: int
-const REPO = {
-  "archlinux": require("./lastupdate/archlinux"),
-  "arch4edu": require("./lastupdate/arch4edu"),
-  "archlinuxcn": require("./lastupdate/archlinuxcn"),
-  "blackarch": require("./lastupdate/blackarch"),
-  "anthon": require("./lastupdate/anthon"),
-  "centos": require("./lastupdate/centos"),
-  "centos-altarch": require("./lastupdate/centos-altarch"),
-  "centos-vault": require("./lastupdate/centos-vault"),
-  "ceph": require("./lastupdate/ceph"),
-  "chakra": require("./lastupdate/chakra"),
-  "CTAN": require("./lastupdate/CTAN"),
-  "debian": require("./lastupdate/debian"),
-  "debian-cd": require('./lastupdate/debian-cd'),
-  "debian-security": require("./lastupdate/debian-security"),
-  "deepin": require('./lastupdate/deepin'),
-  "gnu": require("./lastupdate/gnu"),
-  "gnu-alpha": require("./lastupdate/gnu-alpha"),
-  "kali": require("./lastupdate/kali"),
-  "kali-images": require("./lastupdate/kali-images"),
-  "mageia": require("./lastupdate/mageia"),
-  "manjaro": require("./lastupdate/manjaro"),
-  "manjaro-arm": require("./lastupdate/manjaro-arm"),
-  "mariadb": require("./lastupdate/mariadb"),
-  "msys2": require("./lastupdate/msys2"),
-  "postgresql": require("./lastupdate/postgresql"),
-  "ubuntu": require("./lastupdate/ubuntu"),
-  "ubuntu-releases": require("./lastupdate/ubuntu-releases"),
-};
+const { REPO, lload } = require("./lastupdate/_node");
 
 const {InfluxDB, Point, HttpError} = require('@influxdata/influxdb-client')
 const {url, token, org, bucket} = require('./env')
@@ -78,7 +49,7 @@ async function write(f) {
       }
     // special cname, also collect lastupdate
     if (m.cname in REPO) {
-      lastupdate = (await REPO[m.cname](m.url.startsWith("http") ? m.url : mirrorz.site.url + m.url).catch(_ => NaN)) - Math.round(cur/1000);
+      lastupdate = (await lload(m.cname, m.url.startsWith("http") ? m.url : mirrorz.site.url + m.url)) - Math.round(cur/1000);
       //console.log(mirrorz.site.url+m.url, lastupdate, t, lastupdate - t)
       if (!Number.isNaN(lastupdate)) {
         const repo_lastupdate = new Point('repo_lastupdate')
