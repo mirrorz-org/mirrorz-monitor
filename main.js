@@ -29,7 +29,7 @@ async function write(f) {
   points.push(site)
   //console.log(` ${site}`)
 
-  await Promise.all(mirrorz.mirrors.map(async (m) => {
+  for (const m of mirrorz.mirrors) {
     let t = 0;
     const mapper = new Map();
     m.status.match(/[A-Z](\d+)?/g).map((s) => {
@@ -63,6 +63,7 @@ async function write(f) {
       } else {
         //console.log(mirrorz.site.url+m.url, lastupdate, t)
       }
+      await new Promise(r => setTimeout(r, 1000)); // sleep for 1 sec
     }
 
     const repo = new Point('repo')
@@ -73,7 +74,7 @@ async function write(f) {
       .intField('value', t);
     points.push(repo)
     //console.log(` ${repo}`);
-  }));
+  }
   return points
 }
 
