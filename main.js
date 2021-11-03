@@ -1,8 +1,8 @@
-const { init, load } = require("./parser/node");
-init(); // global.fetch, global.DOMParser, global.Timeout, global.timeout
-const parsers = require("./parser/parsers");
-
 const config = require("./config/config.json");
+
+const { init, load } = require("./parser/node");
+init(config, "mirrorz-monitor"); // global.fetch, global.DOMParser, global.Timeout, global.timeout
+const parsers = require("./parser/parsers");
 
 const LIST = config.monitor_mirrors
   .concat(config.monitor_parser.map((e) => parsers[e]));
