@@ -21,11 +21,17 @@ async function write(f) {
   if (mirrorz === null)
     return points;
 
+  let siteDisable = false;
+  if ('disable' in mirrorz.site) {
+    siteDisable = mirrorz.site.disable;
+  }
+
   const site = new Point('site')
     .timestamp(cur)
     .tag('mirror', mirrorz.site.abbr)
     .tag('url', mirrorz.site.url)
-    .intField('value', 1);
+    .intField('value', 1)
+    .booleanField('disable', siteDisable);
   points.push(site)
   //console.log(` ${site}`)
 
@@ -67,12 +73,23 @@ async function write(f) {
     //  await new Promise(r => setTimeout(r, 1000)); // sleep for 1 sec
     //}
 
+    let mirrorDisable = false;
+    if (siteDisable) {
+      // site.disable == true will override all mirror.disable
+      mirrorDisable = siteDisable;
+    } else {
+      if ('disable' in m) {
+        mirrorDisable = m.disable;
+      }
+    }
+
     const repo = new Point('repo')
       .timestamp(cur)
       .tag('mirror', mirrorz.site.abbr)
       .tag('name', m.cname)
       .tag('url', m.url)
-      .intField('value', t);
+      .intField('value', t)
+      .booleanField('disable', mirrorDisable);
     points.push(repo)
     //console.log(` ${repo}`);
   }
