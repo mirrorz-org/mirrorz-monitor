@@ -10,15 +10,14 @@ Use `node main.js` to insert data into one influxdb 2.x
 
 You should configure those secrets in `env.js`
 
+Set `MIRRORZ_LOCAL_FETCH_FILE` to a local directory path to make `fetch()` read local files for URLs under `config.url` (Node runtime only). For example, if `config.url` is `https://example.com/`, then `https://example.com/a/b/c` maps to `$MIRRORZ_LOCAL_FETCH_FILE/a/b/c`. If the variable is unset, default network behavior is used.
+
 `config` directory is from `mirrorz-org/mirrorz-config`.
 
-`parser` directory is from `mirrorz-org/mirrorz-parser`.
 
 ```bash
 git clone git@github.com:mirrorz-org/mirrorz-config.git config
-pushd config && ln -sf config/localhost.1234.json config.json && popd
-git clone git@github.com:mirrorz-org/mirrorz-parser.git parser
-pushd parser && ln -sf ../config/config.json config.json && npm i && popd
+pushd config && npm i && ln -sf config/localhost.1234.json config.json && popd
 ```
 
 ## influxdb
