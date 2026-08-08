@@ -140,8 +140,8 @@ async function main() {
         if (e.status === 401) {
           console.log('Should setup a new InfluxDB database.')
         }
-        console.log('\nFinished ERROR')
-        process.exit(0);
+        console.error('\nFinished ERROR', e)
+        process.exit(1);
       })
   });
 }
