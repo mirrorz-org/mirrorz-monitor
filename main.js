@@ -10,10 +10,39 @@ const LIST = config.monitor_mirrors
 const { REPO, lload } = require("./lastupdate/_node");
 
 const {InfluxDB, Point, HttpError} = require('@influxdata/influxdb-client')
-const {url, token, org, bucket} = require('./env')
+const {
+  url, token, org, bucket,
+  v1Url, v1Database, v1Username, v1Password,
+} = require('./env')
 
 const writeApi = new InfluxDB({url, token}).getWriteApi(org, bucket, 'ns')
 const cur = new Date();
+
+async function writeInfluxDBV1(points) {
+  if (!v1Url)
+    return;
+
+  const endpoint = new URL('/write', v1Url);
+  endpoint.searchParams.set('db', v1Database);
+  endpoint.searchParams.set('precision', 'ns');
+
+  const headers = {'Content-Type': 'text/plain; charset=utf-8'};
+  if (v1Username || v1Password) {
+    headers.Authorization = 'Basic ' + Buffer
+      .from(`${v1Username}:${v1Password}`)
+      .toString('base64');
+  }
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: points.map((point) => point.toLineProtocol()).join('\n'),
+  });
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(`InfluxDB v1 write failed: HTTP ${response.status}: ${message}`);
+  }
+}
 
 async function write(f) {
   const points = [];
@@ -105,8 +134,10 @@ async function main() {
     //console.log(points.length)
     for (const p of points)
       writeApi.writePoint(p);
-    writeApi
-      .close()
+    Promise.all([
+      writeApi.close(),
+      writeInfluxDBV1(points),
+    ])
       .then(() => {
         //console.log('FINISHED')
         process.exit(0);

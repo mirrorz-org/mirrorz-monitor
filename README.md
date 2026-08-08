@@ -24,6 +24,18 @@ pushd config && npm i && ln -sf config/localhost.1234.json config.json && popd
 
 Use influxdb 2.x. Make sure you have a bucket named `mirrorz`.
 
+To dual-write the same points to an InfluxDB 1.x database, set:
+
+```bash
+export INFLUX_V1_URL=http://localhost:8087
+export INFLUX_V1_DATABASE=mirrorz
+export INFLUX_V1_USERNAME=mirrorz-monitor
+export INFLUX_V1_PASSWORD=secret
+```
+
+The v1 write is disabled when `INFLUX_V1_URL` is unset. The target database must
+already exist and the configured user needs write permission.
+
 ```bash
 # influx setup
 > Welcome to InfluxDB 2.0!
