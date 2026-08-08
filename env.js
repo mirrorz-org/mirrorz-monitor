@@ -1,25 +1,17 @@
-/** InfluxDB v2 URL */
+/** InfluxDB URL (v1 or a v2 server with the v1 compatibility API enabled) */
 const url = process.env['INFLUX_URL'] || 'http://localhost:8086'
-/** InfluxDB authorization token */
-const token = process.env['INFLUX_TOKEN'] || 'TOKEN=='
-/** Organization within InfluxDB  */
-const org = process.env['INFLUX_ORG'] || 'mirrorz'
-/**InfluxDB bucket used in examples  */
-const bucket = 'mirrorz'
-
-/** Optional InfluxDB v1 endpoint for dual writes. Disabled when unset. */
-const v1Url = process.env['INFLUX_V1_URL']
-const v1Database = process.env['INFLUX_V1_DATABASE'] || 'mirrorz'
-const v1Username = process.env['INFLUX_V1_USERNAME'] || ''
-const v1Password = process.env['INFLUX_V1_PASSWORD'] || ''
+/** InfluxDB v2 authorization token */
+const token = process.env['INFLUX_TOKEN'] || ''
+/** Database name (or DBRP-mapped database on InfluxDB v2) */
+const database = process.env['INFLUX_DATABASE'] || 'mirrorz'
+/** InfluxDB v1 username and password */
+const username = process.env['INFLUX_USERNAME'] || ''
+const password = process.env['INFLUX_PASSWORD'] || ''
 
 module.exports = {
   url,
   token,
-  org,
-  bucket,
-  v1Url,
-  v1Database,
-  v1Username,
-  v1Password,
+  database,
+  username,
+  password,
 }

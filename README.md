@@ -6,7 +6,8 @@ Use [https://mirrorz.org/monitor](https://mirrorz.org/monitor) to view one insta
 
 ## main.js
 
-Use `node main.js` to insert data into one influxdb 2.x
+Use `node main.js` to insert data into an InfluxDB 1.x server, or an InfluxDB 2.x
+server with its v1 compatibility API enabled.
 
 You should configure those secrets in `env.js`
 
@@ -22,19 +23,24 @@ pushd config && npm i && ln -sf config/localhost.1234.json config.json && popd
 
 ## influxdb
 
-Use influxdb 2.x. Make sure you have a bucket named `mirrorz`.
-
-To dual-write the same points to an InfluxDB 1.x database, set:
+The monitor writes line protocol to the InfluxDB v1-compatible `/write` endpoint.
+Configure one target with the following environment variables:
 
 ```bash
-export INFLUX_V1_URL=http://localhost:8087
-export INFLUX_V1_DATABASE=mirrorz
-export INFLUX_V1_USERNAME=mirrorz-monitor
-export INFLUX_V1_PASSWORD=secret
+export INFLUX_URL=http://localhost:8086
+export INFLUX_DATABASE=mirrorz
 ```
 
-The v1 write is disabled when `INFLUX_V1_URL` is unset. The target database must
-already exist and the configured user needs write permission.
+For InfluxDB 1.x username/password authentication, also set:
+
+```bash
+export INFLUX_USERNAME=mirrorz-monitor
+export INFLUX_PASSWORD=secret
+```
+
+For InfluxDB 2.x, set `INFLUX_TOKEN` instead. `INFLUX_DATABASE` must have a DBRP
+mapping to the target bucket. The target database or bucket must already exist,
+and the configured credentials need write permission.
 
 ```bash
 # influx setup

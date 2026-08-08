@@ -9,28 +9,25 @@ const LIST = config.monitor_mirrors
 
 const { REPO, lload } = require("./lastupdate/_node");
 
-const {InfluxDB, Point, HttpError} = require('@influxdata/influxdb-client')
+const {Point} = require('@influxdata/influxdb-client')
 const {
-  url, token, org, bucket,
-  v1Url, v1Database, v1Username, v1Password,
+  url, token, database, username, password,
 } = require('./env')
 
-const writeApi = new InfluxDB({url, token}).getWriteApi(org, bucket, 'ns')
 const cur = new Date();
 
-async function writeInfluxDBV1(points) {
-  if (!v1Url)
-    return;
-
-  const endpoint = new URL('/write', v1Url);
-  endpoint.searchParams.set('db', v1Database);
+async function writeInfluxDB(points) {
+  const endpoint = new URL('/write', url);
+  endpoint.searchParams.set('db', database);
   endpoint.searchParams.set('precision', 'ns');
 
   const headers = {'Content-Type': 'text/plain; charset=utf-8'};
-  if (v1Username || v1Password) {
+  if (username || password) {
     headers.Authorization = 'Basic ' + Buffer
-      .from(`${v1Username}:${v1Password}`)
+      .from(`${username}:${password}`)
       .toString('base64');
+  } else if (token) {
+    headers.Authorization = `Token ${token}`;
   }
 
   const response = await fetch(endpoint, {
@@ -40,7 +37,9 @@ async function writeInfluxDBV1(points) {
   });
   if (!response.ok) {
     const message = await response.text();
-    throw new Error(`InfluxDB v1 write failed: HTTP ${response.status}: ${message}`);
+    const error = new Error(`InfluxDB write failed: HTTP ${response.status}: ${message}`);
+    error.status = response.status;
+    throw error;
   }
 }
 
@@ -132,18 +131,13 @@ async function main() {
   Promise.all(p).then(async (v) => {
     const points = v.flat();
     //console.log(points.length)
-    for (const p of points)
-      writeApi.writePoint(p);
-    Promise.all([
-      writeApi.close(),
-      writeInfluxDBV1(points),
-    ])
+    writeInfluxDB(points)
       .then(() => {
         //console.log('FINISHED')
         process.exit(0);
       })
       .catch(e => {
-        if (e instanceof HttpError && e.statusCode === 401) {
+        if (e.status === 401) {
           console.log('Should setup a new InfluxDB database.')
         }
         console.log('\nFinished ERROR')
