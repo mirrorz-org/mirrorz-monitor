@@ -4,8 +4,7 @@ const { init, load } = require("./config/parser/node");
 init(config, "mirrorz-monitor"); // global.fetch, global.DOMParser, global.Timeout, global.timeout
 const parsers = require("./config/parser/parsers");
 
-const LIST = config.monitor_mirrors
-  .concat(config.monitor_parser.map((e) => parsers[e]));
+const LIST = config.mirrors.map((e) => parsers[e]);
 
 const { REPO, lload } = require("./lastupdate/_node");
 
