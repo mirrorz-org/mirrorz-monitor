@@ -105,13 +105,10 @@ async function write(f) {
       // site.disable == true will override all mirror.disable
       mirrorDisable = siteDisable;
     } else {
-      if ('disable' in m) {
-        mirrorDisable = m.disable;
-      }
+      mirrorDisable = m.disable ?? false;
     }
 
-    let repoPrivate = false;
-    if ('private' in m) repoPrivate = true;
+    let repoPrivate = m.private ?? false;
 
     const repo = new Point('repo')
       .timestamp(cur)
