@@ -65,7 +65,7 @@ async function write(f) {
   for (const m of mirrorz.mirrors) {
     let t = 0;
     const mapper = new Map();
-    m.status.match(/[A-Z](\d+)?/g).map((s) => {
+    (m.status?.match(/[A-Z](\d+)?/g) ?? []).map((s) => {
       const c = s[0];
       const t = s.length > 1 ? parseInt(s.substr(1)) : 0;
       mapper.set(c, t);
