@@ -105,10 +105,10 @@ async function write(f) {
       // site.disable == true will override all mirror.disable
       mirrorDisable = siteDisable;
     } else {
-      if ('disable' in m) {
-        mirrorDisable = m.disable;
-      }
+      mirrorDisable = m.disable ?? false;
     }
+
+    let repoPrivate = m.private ?? false;
 
     const repo = new Point('repo')
       .timestamp(cur)
@@ -116,7 +116,8 @@ async function write(f) {
       .tag('name', m.cname)
       .tag('url', m.url)
       .intField('value', t)
-      .booleanField('disable', mirrorDisable);
+      .booleanField('disable', mirrorDisable)
+      .booleanField('private', repoPrivate)
     points.push(repo)
     //console.log(` ${repo}`);
   }
