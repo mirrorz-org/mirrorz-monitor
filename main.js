@@ -110,13 +110,17 @@ async function write(f) {
       }
     }
 
+    let repoPrivate = false;
+    if ('private' in m) repoPrivate = true;
+
     const repo = new Point('repo')
       .timestamp(cur)
       .tag('mirror', mirrorz.site.abbr)
       .tag('name', m.cname)
       .tag('url', m.url)
       .intField('value', t)
-      .booleanField('disable', mirrorDisable);
+      .booleanField('disable', mirrorDisable)
+      .booleanField('private', repoPrivate)
     points.push(repo)
     //console.log(` ${repo}`);
   }
