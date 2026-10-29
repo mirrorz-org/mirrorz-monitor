@@ -36,6 +36,7 @@ async function writeInfluxDB(points) {
 
 async function write(f) {
   const points = [];
+  const normalizeIndexes = new Map();
   const mirrorz = await load(f)
   if (mirrorz === null)
     return points;
@@ -128,23 +129,26 @@ async function write(f) {
     const normalizeRules = [];
     for (const rule of rules) {
       if (rule.normalize) {
-        normalizeRules.push(rule.normalize);
+        normalizeRules.push({ ...rule.normalize, name: rule.scope || m.cname });
         continue;
       }
       // for 'path' type and no normalize rule, automatically generate normalize rule.
       if (rule.type !== 'path' || rule.normalize) continue;
       normalizeRules.push({
+        name: rule.scope || m.cname,
         type: 'path',
         match: '/' + (rule.scope || m.cname) + rule.target,
         target: '/' + m.cname + rule.match,
       });
     }
 
-    for (const [index, rule] of normalizeRules.entries()) {
+    for (const rule of normalizeRules) {
+      const index = çIndexes.get(rule.name) || 0;
+      normalizeIndexes.set(rule.name, index + 1);
       points.push(new Point('normalize')
         .timestamp(cur)
         .tag('mirror', mirrorz.site.abbr)
-        .tag('name', m.cname)
+        .tag('name', rule.name)
         .tag('index', String(index))
         .stringField('type', rule.type)
         .stringField('match', rule.match)
