@@ -143,7 +143,7 @@ async function write(f) {
     }
 
     for (const rule of normalizeRules) {
-      const index = çIndexes.get(rule.name) || 0;
+      const index = normalizeIndexes.get(rule.name) || 0;
       normalizeIndexes.set(rule.name, index + 1);
       points.push(new Point('normalize')
         .timestamp(cur)
