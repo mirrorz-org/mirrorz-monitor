@@ -9,7 +9,7 @@ Use [https://mirrorz.org/monitor](https://mirrorz.org/monitor) to view one insta
 Use `node main.js` to insert data into an InfluxDB 1.x server, or an InfluxDB 2.x
 server with its v1 compatibility API enabled.
 
-You should configure those secrets in `env.js`
+You should copy `env.example.js` as `env.js` and configure those secrets.
 
 Set `MIRRORZ_LOCAL_FETCH_FILE` to a local directory path to make `fetch()` read local files for URLs under `config.url` (Node runtime only). For example, if `config.url` is `https://example.com/`, then `https://example.com/a/b/c` maps to `$MIRRORZ_LOCAL_FETCH_FILE/a/b/c`. If the variable is unset, default network behavior is used.
 
