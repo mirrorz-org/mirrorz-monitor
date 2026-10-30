@@ -111,10 +111,11 @@ async function write(f) {
       .tag('url', m.url)
       .intField('value', t)
       .booleanField('disable', mirrorDisable)
-      .booleanField('private', repoPrivate);
+      .booleanField('private', repoPrivate)
+      .stringField('mirrorlist_path', m.mirrorlist_path ?? m.url);
     points.push(repo);
 
-    for (const [index, rule] of rules.entries()) {
+    for (const [index, rule] of rules.filter(rule => rule.type).entries()) {
       points.push(new Point('rule')
           .timestamp(cur)
           .tag('mirror', mirrorz.site.abbr)
@@ -153,8 +154,10 @@ async function write(f) {
         .stringField('type', rule.type)
         .stringField('match', rule.match)
         .stringField('target', rule.target)
-        .stringField('scope', rule.scope || m.cname))
+        .stringField('scope', rule.scope || m.cname));
     }
+
+    //console.log(` ${repo}`);
   }
   return points
 }
