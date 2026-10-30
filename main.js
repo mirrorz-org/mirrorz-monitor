@@ -1,12 +1,4 @@
-const config = require("./config/config.json");
-
-const { init, load } = require("./config/parser/node");
-init(config, "mirrorz-monitor"); // global.fetch, global.DOMParser, global.Timeout, global.timeout
-const parsers = require("./config/parser/parsers");
-
-const LIST = config.mirrors.map((e) => parsers[e]);
-
-const { REPO, lload } = require("./lastupdate/_node");
+const { LIST, load } = require("./lib/monitor");
 
 const {Point} = require('@influxdata/influxdb-client')
 const {
@@ -44,6 +36,7 @@ async function writeInfluxDB(points) {
 
 async function write(f) {
   const points = [];
+  const normalizeIndexes = new Map();
   const mirrorz = await load(f)
   if (mirrorz === null)
     return points;
@@ -110,6 +103,7 @@ async function write(f) {
 
     let repoPrivate = m.private ?? false;
 
+    const rules = m.rules || [];
     const repo = new Point('repo')
       .timestamp(cur)
       .tag('mirror', mirrorz.site.abbr)
@@ -118,7 +112,36 @@ async function write(f) {
       .intField('value', t)
       .booleanField('disable', mirrorDisable)
       .booleanField('private', repoPrivate)
-    points.push(repo)
+      .stringField('mirrorlist_path', m.mirrorlist_path ?? m.url);
+    points.push(repo);
+
+    for (const [index, rule] of rules.filter(rule => rule.type).entries()) {
+      points.push(new Point('rule')
+          .timestamp(cur)
+          .tag('mirror', mirrorz.site.abbr)
+          .tag('name', m.cname)
+          .tag('index', String(index))
+          .stringField('type', rule.type)
+          .stringField('match', rule.match)
+          .stringField('target', rule.target)
+          .stringField('scope', rule.scope || m.cname));
+    }
+
+    for (const { scope, normalize } of rules.filter(rule => rule.normalize)) {
+      const name = scope || m.cname;
+      const index = normalizeIndexes.get(name) || 0;
+      normalizeIndexes.set(name, index + 1);
+      points.push(new Point('normalize')
+        .timestamp(cur)
+        .tag('mirror', mirrorz.site.abbr)
+        .tag('name', name)
+        .tag('index', String(index))
+        .stringField('type', normalize.type)
+        .stringField('match', normalize.match)
+        .stringField('target', normalize.target)
+        .stringField('scope', normalize.scope || m.cname));
+    }
+
     //console.log(` ${repo}`);
   }
   return points

@@ -1,5 +1,5 @@
-const {InfluxDB} = require('@influxdata/influxdb-client')
-const {url, token, org, bucket} = require('./env')
+const { createQueryApi } = require("./lib/influx");
+const { bucket } = require("./env");
 
 const human = (delta) => {
   if (delta == 0) {
@@ -32,7 +32,7 @@ const mirror = process.argv[2]
 const from = process.argv[3]
 const to = process.argv[4]
 
-const queryApi = new InfluxDB({url, token}).getQueryApi(org)
+const queryApi = createQueryApi()
 const fluxQuery =`
   from(bucket:"${bucket}")
     |> range(start: -30m)
