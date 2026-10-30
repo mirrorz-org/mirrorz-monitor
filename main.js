@@ -127,34 +127,19 @@ async function write(f) {
           .stringField('scope', rule.scope || m.cname));
     }
 
-    const normalizeRules = [];
-    for (const rule of rules) {
-      if (rule.normalize) {
-        normalizeRules.push({ ...rule.normalize, name: rule.scope || m.cname });
-        continue;
-      }
-      // for 'path' type and no normalize rule, automatically generate normalize rule.
-      if (rule.type !== 'path' || rule.normalize) continue;
-      normalizeRules.push({
-        name: rule.scope || m.cname,
-        type: 'path',
-        match: '/' + (rule.scope || m.cname) + rule.target,
-        target: '/' + m.cname + rule.match,
-      });
-    }
-
-    for (const rule of normalizeRules) {
-      const index = normalizeIndexes.get(rule.name) || 0;
-      normalizeIndexes.set(rule.name, index + 1);
+    for (const { scope, normalize } of rules.filter(rule => rule.normalize)) {
+      const name = scope || m.cname;
+      const index = normalizeIndexes.get(name) || 0;
+      normalizeIndexes.set(name, index + 1);
       points.push(new Point('normalize')
         .timestamp(cur)
         .tag('mirror', mirrorz.site.abbr)
-        .tag('name', rule.name)
+        .tag('name', name)
         .tag('index', String(index))
-        .stringField('type', rule.type)
-        .stringField('match', rule.match)
-        .stringField('target', rule.target)
-        .stringField('scope', rule.scope || m.cname));
+        .stringField('type', normalize.type)
+        .stringField('match', normalize.match)
+        .stringField('target', normalize.target)
+        .stringField('scope', normalize.scope || m.cname));
     }
 
     //console.log(` ${repo}`);
